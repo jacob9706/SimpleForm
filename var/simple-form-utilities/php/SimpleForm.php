@@ -164,17 +164,19 @@ HTML;
 
         echo <<<HTML
             <label>{$label}</label>
-            <textarea type="text" name="{$nameAttributeValue}" value="
+            <textarea type="text" name="{$nameAttributeValue}"
 HTML;
-        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])){
-            echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
-        }
-        echo '"';
         foreach ($additionalAttributes as $attribute => $value) {
             echo ' ' . $attribute . '="' . $value . '"';
         }
 
-        echo '></textarea>';
+        echo '>';
+
+        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])){
+            echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
+        }
+
+        echo '</textarea>';
     }
 
     /**
@@ -265,10 +267,10 @@ HTML;
 
         echo <<<HTML
             <label>{$label}</label>
-            <select
+            <select name="{$nameAttributeValue}"
 HTML;
-        foreach ($additionalAttributes as $attribute => $value) {
-            echo ' ' . $attribute . '="' . $value . '"';
+        foreach ($additionalAttributes as $attribute => $attributeValue) {
+            echo ' ' . $attribute . '="' . $attributeValue . '"';
         }
         echo '>';
 
@@ -472,3 +474,6 @@ HTML;
         }
     }
 }
+//TODO: Figure out why the formatted data is not being displayed back in the text fields
+//TODO: Add more options for validation
+//TODO: Find a way to do checkboxes efficiently
