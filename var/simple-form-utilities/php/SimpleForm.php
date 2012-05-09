@@ -26,6 +26,7 @@ class SimpleForm
 
     // Data about form
     private $_formElementList = array();
+    private $_notRequired = array();
 
     /**
      * @var string
@@ -124,8 +125,12 @@ class SimpleForm
 
         echo <<<HTML
             <label>{$label}</label>
-            <input type="text" name="{$nameAttributeValue}" value=""
+            <input type="text" name="{$nameAttributeValue}" value="
 HTML;
+        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])){
+            echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
+        }
+        echo '"';
         foreach ($additionalAttributes as $attribute => $value) {
             echo ' ' . $attribute . '="' . $value . '"';
         }
@@ -159,8 +164,12 @@ HTML;
 
         echo <<<HTML
             <label>{$label}</label>
-            <textarea type="text" name="{$nameAttributeValue}" value=""
+            <textarea type="text" name="{$nameAttributeValue}" value="
 HTML;
+        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])){
+            echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
+        }
+        echo '"';
         foreach ($additionalAttributes as $attribute => $value) {
             echo ' ' . $attribute . '="' . $value . '"';
         }
@@ -204,8 +213,8 @@ HTML;
             echo <<<HTML
                 <input type="radio" name="{$nameAttributeValue}" value="{$value}"
 HTML;
-            foreach ($additionalAttributes as $attribute => $value) {
-                echo ' ' . $attribute . '="' . $value . '"';
+            foreach ($additionalAttributes as $attribute => $attributeValue) {
+                echo ' ' . $attribute . '="' . $attributeValue . '"';
             }
             if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue]) && !$set) {
                 if ($_SESSION[$this->_formName . 'Values'][$nameAttributeValue] == $value) {
@@ -311,6 +320,11 @@ HTML;
 
     //============================================= Validation ====================================================/
 
+    public function notRequired($arrayOfNotRequiredInputNames)
+    {
+        $this->_notRequired = $arrayOfNotRequiredInputNames;
+    }
+
     /**
      * @param string $functionToBeCalledIfInvalid
      *   Function to be executed if form is not valid
@@ -319,19 +333,102 @@ HTML;
      */
     public function validate($functionToBeCalledIfInvalid = "_showError", $functionToBeCalledIfValid = "_redirect")
     {
-        function _showError()
+        function _showError($errorMessage)
         {
-            echo 'error';
+            echo $errorMessage;
         }
 
-        function _redirect()
+        function _redirect($where)
         {
-            header("Location: kfds.php");
+            header("Location: " . $where);
         }
 
         function standardText($name, &$value, $errorMessages, &$error, &$isValid)
         {
+            $value = trim($value);
+            $value = strip_tags($value);
+
             if (empty($value)) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function numbersOnly($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            $value = trim($value);
+            $value = strip_tags($value);
+
+            if (empty($value) || !isset($value) || preg_match("/([^0-9])+/", $value)) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function textOnly($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            $value = trim($value);
+            $value = strip_tags($value);
+
+            if (empty($value) || !isset($value) || is_numeric($value) || preg_match("^[0-9]^", $value)) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function tagsAllowed($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            $value = trim($value);
+
+            if (empty($value)) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function phoneNumber($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            $value = trim($value);
+
+            $formatted = preg_replace("^[0-9]^", "#", $value);
+            if ($formatted != "###-###-####") {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function email($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            $value = trim($value);
+
+            if (!preg_match("/^([a-zA-Z0-9])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)+/", $value)) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function zipCode($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            $value = trim($value);
+            $value = preg_replace("[^0-9]", "", $value);
+
+            if (strlen($value) != 5) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function radio($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            if (!isset($value)) {
+                $error .= $errorMessages[$name] . '<br>';
+                $isValid = false;
+            }
+        }
+
+        function select($name, &$value, $errorMessages, &$error, &$isValid)
+        {
+            if (!isset($value)) {
                 $error .= $errorMessages[$name] . '<br>';
                 $isValid = false;
             }
@@ -350,6 +447,9 @@ HTML;
                 foreach (SimpleForm::$validationTypes as $validationType) {
                     if ($validationType == $formElementType) {
                         if (isset($_SESSION[$this->_formName . 'Values'][$name])) {
+                            if(in_array($name,$this->_notRequired) && empty($_SESSION[$this->_formName . 'Values'][$name])) {
+                                continue 2;
+                            }
                             $validationType($name, $_SESSION[$this->_formName . 'Values'][$name], $this->_errorMessages,
                                 $this->error, $this->_isValid);
                         }
@@ -357,9 +457,17 @@ HTML;
                 }
             }
             if ($this->_isValid) {
-                $functionToBeCalledIfValid();
+                if ($functionToBeCalledIfValid == "_redirect") {
+                    $functionToBeCalledIfValid($this->_formAction);
+                } else {
+                    $functionToBeCalledIfValid();
+                }
             } else {
-                $functionToBeCalledIfInvalid();
+                if ($functionToBeCalledIfInvalid == "_showError") {
+                    $functionToBeCalledIfInvalid($this->error);
+                } else {
+                    $functionToBeCalledIfInvalid();
+                }
             }
         }
     }
