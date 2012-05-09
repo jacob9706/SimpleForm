@@ -1,16 +1,31 @@
 <?php
+/*
+ * I hate to do this but I can not create a class variable to be accessed within
+ * a function nested within a method
+ */
+
+$GLOBALS['phoneFormats'] = array(
+    'xxx-xxx-xxxx',
+    'xxx xxx xxxx',
+    '(xxx)xxx xxxx',
+    '(xxx) xxx xxxx',
+    '(xxx)xxx-xxxx',
+);
+
 /**
  * SimpleForms is a class that is designed to:
- *   - Make creating forms
- *     - simple and intuitive
- *     - look good
+ *   - Make creating forms simple and intuitive
  *   - Make validation easy
  *   - Provide everyone with an easy to use form system
  *
- * All data is stored in the session under $_SESSION[$_formName . "Data"]
+ * YOU MUST START A SESSION ABOVE WHERE YOU USE THIS CLASS. I LEFT OUT AUTO STARTING A
+ * SESSION IN THE CLASS DUE TO SCHOOL SERVER ISSUES.
  *
- * If in the constructor you set $_formName = "contactForm" and you create an input called
- * input1, your data can be accessed by $_SESSION['contactFormData']['input1']
+ * All data is stored in the session under $_SESSION[$_formName . "Values"]
+ *
+ * If in the constructor you set $nameAttributeValue = "contactForm" and you create an input called
+ * input1, your data can be accessed by $_SESSION['contactFormValues']['input1'] or you can
+ * use getValue('input1') to avoid errors if value has yet to be set.
  */
 class SimpleForm
 {
@@ -127,7 +142,7 @@ class SimpleForm
             <label>{$label}</label>
             <input type="text" name="{$nameAttributeValue}" value="
 HTML;
-        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])){
+        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])) {
             echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
         }
         echo '"';
@@ -172,7 +187,7 @@ HTML;
 
         echo '>';
 
-        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])){
+        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])) {
             echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
         }
 
@@ -322,9 +337,39 @@ HTML;
 
     //============================================= Validation ====================================================/
 
+    /**
+     * @param $arrayOfNotRequiredInputNames
+     *   An array of the names of elements that are not required.
+     */
     public function notRequired($arrayOfNotRequiredInputNames)
     {
         $this->_notRequired = $arrayOfNotRequiredInputNames;
+    }
+
+    /**
+     * @param $arrayOfPhoneFormats
+     *   An array of phone formats. Format strings are composed of x's. ie: array('xxx-xxx-xxxx', 'xxxxxxxxxx')
+     * @param $keepStandardFormats
+     *   Merge with defaults or replace with only your values
+     */
+    public function setPhoneFormats($arrayOfPhoneFormats, $keepStandardFormats = true)
+    {
+        if ($keepStandardFormats) {
+            (array)$GLOBALS['phoneFormats'] = array_merge((array)$GLOBALS['phoneFormats'], (array)$arrayOfPhoneFormats);
+            (array)$GLOBALS['phoneFormats'] = array_unique((array)$GLOBALS['phoneFormats']);
+        } else {
+            (array)$GLOBALS['phoneFormats'] = (array)$arrayOfPhoneFormats;
+        }
+    }
+
+    /**
+     * @return array
+     *  Returns an array of allowed phone formats.
+     */
+    public function getPhoneFormats()
+    {
+        settype($GLOBALS['phoneFormats'], 'array');
+        return $GLOBALS['phoneFormats'];
     }
 
     /**
@@ -332,6 +377,10 @@ HTML;
      *   Function to be executed if form is not valid
      * @param string $functionToBeCalledIfValid
      *   Function to be executed if form is valid
+     *
+     * Should come after endForm
+     *
+     * @see endForm
      */
     public function validate($functionToBeCalledIfInvalid = "_showError", $functionToBeCalledIfValid = "_redirect")
     {
@@ -391,17 +440,28 @@ HTML;
         function phoneNumber($name, &$value, $errorMessages, &$error, &$isValid)
         {
             $value = trim($value);
+            $value = strip_tags($value);
 
-            $formatted = preg_replace("^[0-9]^", "#", $value);
-            if ($formatted != "###-###-####") {
+            $formatted = preg_replace("^[0-9]^", "x", $value);
+            if (!in_array($formatted, $GLOBALS['phoneFormats'])) {
                 $error .= $errorMessages[$name] . '<br>';
                 $isValid = false;
+            } else {
+                // Remove everything except numbers
+                $value = preg_replace('/[^\d]/', '', $value);
+                // If like 555-5555 (seven characteres) or 555-555-5555 (ten characters) format
+                if (strlen($value) == 7) {
+                    $value = substr($value, 0, 3) . '-' . substr($value, 3);
+                } else if (strlen($value) == 10) {
+                    $value = substr($value, 0, 3) . '-' . substr($value, 3, 3) . '-' . substr($value, 6);
+                }
             }
         }
 
         function email($name, &$value, $errorMessages, &$error, &$isValid)
         {
             $value = trim($value);
+            $value = strip_tags($value);
 
             if (!preg_match("/^([a-zA-Z0-9])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)+/", $value)) {
                 $error .= $errorMessages[$name] . '<br>';
@@ -444,14 +504,21 @@ HTML;
             }
         }
 
+        // If form has been submitted
         if (isset($_SESSION[$this->_formName . 'Values']['submit'])) {
+            // Go through each form element
             foreach ($_SESSION[$this->_formName . 'ElementList'] as $name => $formElementType) {
+                // Go through each type of element
                 foreach (SimpleForm::$validationTypes as $validationType) {
+                    // If the current element is a real type
                     if ($validationType == $formElementType) {
+                        // Check if element exists
                         if (isset($_SESSION[$this->_formName . 'Values'][$name])) {
-                            if(in_array($name,$this->_notRequired) && empty($_SESSION[$this->_formName . 'Values'][$name])) {
+                            // If it is not required and empty skip validation
+                            if (in_array($name, $this->_notRequired) && empty($_SESSION[$this->_formName . 'Values'][$name])) {
                                 continue 2;
                             }
+                            // Else validate
                             $validationType($name, $_SESSION[$this->_formName . 'Values'][$name], $this->_errorMessages,
                                 $this->error, $this->_isValid);
                         }
@@ -472,6 +539,14 @@ HTML;
                 }
             }
         }
+    }
+
+    public function getValue($formElementName)
+    {
+        if (isset($_SESSION[$this->_formName . 'Values'][$formElementName])) {
+            return $_SESSION[$this->_formName . 'Values'][$formElementName];
+        }
+        return '';
     }
 }
 //TODO: Figure out why the formatted data is not being displayed back in the text fields
