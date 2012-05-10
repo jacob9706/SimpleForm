@@ -51,6 +51,12 @@ class SimpleForm
 
     /**
      * @var array
+     *   Array of user input
+     */
+    public $values = array();
+
+    /**
+     * @var array
      *   List of available validation types
      */
     public static $VALIDATION_TYPES = array(
@@ -94,9 +100,9 @@ class SimpleForm
     function  startForm()
     {
         if ($this->_formMethod == "get") {
-            $_SESSION[$this->_formName . 'Values'] = $_GET;
+            $this->values = $_GET;
         } else {
-            $_SESSION[$this->_formName . 'Values'] = $_POST;
+            $this->values = $_POST;
         }
         echo "<form action='' method='{$this->_formMethod}'>";
     }
@@ -109,7 +115,7 @@ class SimpleForm
         echo '</form>';
 
         // Store form element list for later use
-        $_SESSION[$this->_formName . 'ElementList'] = $this->_formElementList;
+        $_SESSION[$this->_formName] = serialize($this);
     }
 
     /**
@@ -142,8 +148,8 @@ class SimpleForm
             <label>{$label}</label>
             <input type="text" name="{$nameAttributeValue}" value="
 HTML;
-        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])) {
-            echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
+        if (isset($this->values[$nameAttributeValue])) {
+            echo $this->values[$nameAttributeValue];
         }
         echo '"';
         foreach ($additionalAttributes as $attribute => $value) {
@@ -187,8 +193,8 @@ HTML;
 
         echo '>';
 
-        if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue])) {
-            echo $_SESSION[$this->_formName . 'Values'][$nameAttributeValue];
+        if (isset($this->values[$nameAttributeValue])) {
+            echo $this->values[$nameAttributeValue];
         }
 
         echo '</textarea>';
@@ -233,8 +239,8 @@ HTML;
             foreach ($additionalAttributes as $attribute => $attributeValue) {
                 echo ' ' . $attribute . '="' . $attributeValue . '"';
             }
-            if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue]) && !$set) {
-                if ($_SESSION[$this->_formName . 'Values'][$nameAttributeValue] == $value) {
+            if (isset($this->values[$nameAttributeValue]) && !$set) {
+                if ($this->values[$nameAttributeValue] == $value) {
                     echo ' checked="checked"';
                     $set = true;
                 }
@@ -293,8 +299,8 @@ HTML;
             echo <<<HTML
                 <option value="{$value}"
 HTML;
-            if (isset($_SESSION[$this->_formName . 'Values'][$nameAttributeValue]) && !$set) {
-                if ($_SESSION[$this->_formName . 'Values'][$nameAttributeValue] == $value) {
+            if (isset($this->values[$nameAttributeValue]) && !$set) {
+                if ($this->values[$nameAttributeValue] == $value) {
                     echo ' selected="selected"';
                     $set = true;
                 }
@@ -505,21 +511,21 @@ HTML;
         }
 
         // If form has been submitted
-        if (isset($_SESSION[$this->_formName . 'Values']['submit'])) {
+        if (isset($this->values['submit'])) {
             // Go through each form element
-            foreach ($_SESSION[$this->_formName . 'ElementList'] as $name => $formElementType) {
+            foreach ($this->_formElementList as $name => $formElementType) {
                 // Go through each type of element
                 foreach (SimpleForm::$VALIDATION_TYPES as $validationType) {
                     // If the current element is a real type
                     if ($validationType == $formElementType) {
                         // Check if element exists
-                        if (isset($_SESSION[$this->_formName . 'Values'][$name])) {
+                        if (isset($this->values[$name])) {
                             // If it is not required and empty skip validation
-                            if (in_array($name, $this->_notRequired) && empty($_SESSION[$this->_formName . 'Values'][$name])) {
+                            if (in_array($name, $this->_notRequired) && empty($this->values[$name])) {
                                 continue 2;
                             }
                             // Else validate
-                            $validationType($name, $_SESSION[$this->_formName . 'Values'][$name], $this->_errorMessages,
+                            $validationType($name, $this->values[$name], $this->_errorMessages,
                                 $this->error, $this->_isValid);
                         }
                     }
@@ -549,8 +555,8 @@ HTML;
      */
     public function getValue($formElementName)
     {
-        if (isset($_SESSION[$this->_formName . 'Values'][$formElementName])) {
-            return $_SESSION[$this->_formName . 'Values'][$formElementName];
+        if (isset($this->values[$formElementName])) {
+            return $this->values[$formElementName];
         }
         return '';
     }
