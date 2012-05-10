@@ -5,6 +5,7 @@
     // Include the file
     session_start();
     require_once 'var/simple-forms-include.php';
+    require_once 'var/simple-form-utilities/php/SimpleFormData.php';
 
     // Setup by setting path to file
     simple_forms_setup("var");
@@ -14,14 +15,13 @@
 <br>
 <pre>
     <?php
-    $form = unserialize($_SESSION['form']);
+    //$form = unserialize($_SESSION['form']);
+    $form = new SimpleFormData('form');
 
-    print_r($form->values);
+    print_r($form->form);
     ?>
 </pre>
 <?php
-$form->inputText('input1', "INPUT 1");
-$form->inputSelect('select', 'SelectLabel', $_SESSION['options']);
 
 ?>
 </pre>

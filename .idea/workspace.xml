@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9a73427a-e8c6-41b9-b737-0a040be779b0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/action.php" />
+    <list default="true" id="9a73427a-e8c6-41b9-b737-0a040be779b0" name="Default" comment="Changed to store object in session and pull all data out.">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/var/simple-form-utilities/php/SimpleFormData.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.php" afterPath="$PROJECT_DIR$/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/var/simple-form-utilities/php/SimpleForm.php" afterPath="$PROJECT_DIR$/var/simple-form-utilities/php/SimpleForm.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/action.php" afterPath="$PROJECT_DIR$/action.php" />
     </list>
     <ignored path="SimpleForms2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,7 +29,7 @@
       <file leaf-file-name="SimpleForm.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/var/simple-form-utilities/php/SimpleForm.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="1" selection-start="966" selection-end="966" vertical-scroll-proportion="0.0">
+            <state line="551" column="35" selection-start="18589" selection-end="18589" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#6#130#0" expanded="true" />
               </folding>
@@ -38,10 +37,19 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="SimpleFormData.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/var/simple-form-utilities/php/SimpleFormData.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="action.php" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/action.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="5" selection-start="365" selection-end="365" vertical-scroll-proportion="0.4883721">
+            <state line="25" column="2" selection-start="478" selection-end="478" vertical-scroll-proportion="0.5813953">
               <folding />
             </state>
           </provider>
@@ -50,7 +58,16 @@
       <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="0" selection-start="910" selection-end="925" vertical-scroll-proportion="-22.538462">
+            <state line="2" column="6" selection-start="29" selection-end="29" vertical-scroll-proportion="-1.3076923">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simple-forms-include.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/var/simple-forms-include.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="31" selection-start="794" selection-end="794" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -80,7 +97,10 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/var/simple-form-utilities/php/simple-forms.php" />
         <option value="$PROJECT_DIR$/var/simple-form-utilities/php/SimpleForm.php" />
+        <option value="$PROJECT_DIR$/var/simple-form-utilities/php/SimpleFormData.php" />
         <option value="$PROJECT_DIR$/index.php" />
+        <option value="$PROJECT_DIR$/var/simple-forms-include.php" />
+        <option value="$PROJECT_DIR$/var/simple-form-utilities/php/SimpleFormCompile.php" />
         <option value="$PROJECT_DIR$/action.php" />
       </list>
     </option>
@@ -285,7 +305,11 @@
       <created>1336621662832</created>
       <updated>1336621662832</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Changed to store object in session and pull all data out.">
+      <created>1336634409049</created>
+      <updated>1336634409049</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -370,7 +394,7 @@
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit before changing storing variables in session to storing the object it's self" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed to store object in session and pull all data out." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -388,6 +412,7 @@
     <MESSAGE value="Callback functions for user to pass to validate method." />
     <MESSAGE value="Added Methods: getValue, setPhoneFormats, getPhoneFormats. Also formatted data properly for phone numbers and a few others." />
     <MESSAGE value="Commit before changing storing variables in session to storing the object it's self" />
+    <MESSAGE value="Changed to store object in session and pull all data out." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -401,11 +426,6 @@
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/_types.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="48" column="11" selection-start="1065" selection-end="1065" vertical-scroll-proportion="1.1224209" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/var/simple-forms-include.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../isanyoneup/Validator.php">
@@ -434,25 +454,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/var/simple-form-utilities/php/SimpleFormData.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/var/simple-form-utilities/php/SimpleForm.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="1" selection-start="966" selection-end="966" vertical-scroll-proportion="0.0">
+        <state line="551" column="35" selection-start="18589" selection-end="18589" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#6#130#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/var/simple-forms-include.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="31" selection-start="794" selection-end="794" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="0" selection-start="910" selection-end="925" vertical-scroll-proportion="-22.538462">
+        <state line="2" column="6" selection-start="29" selection-end="29" vertical-scroll-proportion="-1.3076923">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/action.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="5" selection-start="365" selection-end="365" vertical-scroll-proportion="0.4883721">
+        <state line="25" column="2" selection-start="478" selection-end="478" vertical-scroll-proportion="0.5813953">
           <folding />
         </state>
       </provider>
