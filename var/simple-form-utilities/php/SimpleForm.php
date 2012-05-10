@@ -53,7 +53,7 @@ class SimpleForm
      * @var array
      *   List of available validation types
      */
-    public static $validationTypes = array(
+    public static $VALIDATION_TYPES = array(
         'standardText',
         'numbersOnly',
         'textOnly',
@@ -343,7 +343,7 @@ HTML;
      */
     public function notRequired($arrayOfNotRequiredInputNames)
     {
-        $this->_notRequired = $arrayOfNotRequiredInputNames;
+        (array)$this->_notRequired = (array)$arrayOfNotRequiredInputNames;
     }
 
     /**
@@ -449,7 +449,7 @@ HTML;
             } else {
                 // Remove everything except numbers
                 $value = preg_replace('/[^\d]/', '', $value);
-                // If like 555-5555 (seven characteres) or 555-555-5555 (ten characters) format
+                // If like 555-5555 (seven characters) or 555-555-5555 (ten characters) format
                 if (strlen($value) == 7) {
                     $value = substr($value, 0, 3) . '-' . substr($value, 3);
                 } else if (strlen($value) == 10) {
@@ -509,7 +509,7 @@ HTML;
             // Go through each form element
             foreach ($_SESSION[$this->_formName . 'ElementList'] as $name => $formElementType) {
                 // Go through each type of element
-                foreach (SimpleForm::$validationTypes as $validationType) {
+                foreach (SimpleForm::$VALIDATION_TYPES as $validationType) {
                     // If the current element is a real type
                     if ($validationType == $formElementType) {
                         // Check if element exists
@@ -541,12 +541,27 @@ HTML;
         }
     }
 
+    /**
+     * @param $formElementName
+     *   Name of form element you are trying to access
+     * @return mixed
+     *   Value of form element
+     */
     public function getValue($formElementName)
     {
         if (isset($_SESSION[$this->_formName . 'Values'][$formElementName])) {
             return $_SESSION[$this->_formName . 'Values'][$formElementName];
         }
         return '';
+    }
+
+
+    private function is_assoc_array($array)
+    {
+        if (is_array($array) && !is_numeric(array_shift(array_keys($array)))) {
+            return true;
+        }
+        return false;
     }
 }
 //TODO: Figure out why the formatted data is not being displayed back in the text fields
