@@ -4,11 +4,9 @@
     <?php
     // Include the file
     session_start();
-    require_once 'var/simple-forms-include.php';
-
-    // Setup by setting path to file
-    simple_forms_setup("var");
+    require_once 'SimpleForm.php';
     ?>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="margin-left: 10px;">
 <br>
@@ -16,7 +14,8 @@
 <?php
 $_SESSION['options'] = $options = array(
     "Option1" => 1,
-    "Option2" => 2
+    "Option2" => 2,
+    "Option new" => 'hello'
 );
 
 function invalid()
@@ -31,21 +30,21 @@ function valid()
 
 $additionalOptions = array(
     'style' => 'color: red;',
-    'onclick' => 'someFunction()'
+    'onclick' => 'someFunction()',
 );
 
 $form = new SimpleForm('form', 'post', 'action.php');
 $form->startForm();
-$form->inputText('input1',"INPUT 1");
-$form->inputSelect('select','SelectLabel',$options);
+$form->inputText('work',"INPUT 1","work email",'email');
+$form->inputText('home',"INPUT 1","home email",'email');
 $form->inputSubmit("Submit Button", array('class' => 'btn btn-success'));
 $form->endForm();
 ?>
 <pre>
     <?php
-    print_r($form->values);
+    print_r(SimpleForm::$VALIDATION_TYPES);
     ?>
 </pre>
-<p style="color:#ff0000;"><?php $form->validate(); ?></p>
+<p style="color: rgb(255,0,0);"><?php $form->validate() ?></p>
 </body>
 </html>

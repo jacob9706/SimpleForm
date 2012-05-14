@@ -515,18 +515,18 @@ HTML;
             // Go through each form element
             foreach ($this->_formElementList as $name => $formElementType) {
                 // Go through each type of element
+                if (in_array($name, $this->_notRequired) && empty($this->values[$name])) {
+                    continue;
+                }
                 foreach (SimpleForm::$VALIDATION_TYPES as $validationType) {
                     // If the current element is a real type
                     if ($validationType == $formElementType) {
                         // Check if element exists
                         if (isset($this->values[$name])) {
-                            // If it is not required and empty skip validation
-                            if (in_array($name, $this->_notRequired) && empty($this->values[$name])) {
-                                continue 2;
-                            }
                             // Else validate
                             $validationType($name, $this->values[$name], $this->_errorMessages,
-                                $this->error, $this->_isValid);
+                                $this->error, $this->_isValid); //The function for validation is called based upon the type the
+                            //User passed in
                         }
                     }
                 }

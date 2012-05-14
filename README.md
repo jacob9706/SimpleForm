@@ -1,4 +1,4 @@
-SimpleForms2
+SimpleForm
 ================
 
 Forms made easy :D

@@ -4,26 +4,20 @@
     <?php
     // Include the file
     session_start();
-    require_once 'var/simple-forms-include.php';
-    require_once 'var/simple-form-utilities/php/SimpleFormData.php';
-
-    // Setup by setting path to file
-    simple_forms_setup("var");
+	require_once 'SimpleForm.php';
+    require_once 'SimpleFormData.php';
     ?>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="margin-left: 10px;">
 <br>
 <pre>
     <?php
-    //$form = unserialize($_SESSION['form']);
     $form = new SimpleFormData('form');
-
-    print_r($form->form);
+    print_r($form->values);
     ?>
 </pre>
-<?php
 
-?>
-</pre>
+<?php echo $form->getValue('input1'); ?>
 </body>
 </html>
